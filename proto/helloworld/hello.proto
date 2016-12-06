@@ -1,0 +1,23 @@
+// protov3 hello world
+
+syntax = "proto3";
+
+package helloworld;
+
+message ResponseCode {
+    int32 errCode = 10;
+    string errMessage = 20;
+}
+
+message HelloRequest {
+    string name = 10;
+}
+
+message HelloResponse {
+    ResponseCode rc = 10;
+    string message = 20;
+}
+
+service Greeter {
+    rpc SayHello (HelloRequest) returns (HelloResponse) {}
+}
