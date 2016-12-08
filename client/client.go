@@ -7,6 +7,7 @@ import (
 	"time"
 	pb "grpc_test/proto/helloworld"
 	"context"
+	"google.golang.org/grpc"
 )
 
 const (
@@ -38,7 +39,7 @@ func Init() {
 func main() {
 	Init()
 
-	conn, err := net.DialTimeout("tcp", lAddr, ConnTimeout)
+	conn, err := grpc.Dial(lAddr, grpc.WithInsecure())
 	if err != nil {
 		LOG.Fatalf("Failed to dial[laddr:%s, err:%v]", lAddr, err)
 	}
