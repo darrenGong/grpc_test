@@ -3,7 +3,6 @@ package main
 import (
 	"os"
 	logger "github.com/Sirupsen/logrus"
-	"net"
 	"time"
 	pb "grpc_test/proto/helloworld"
 	"context"
