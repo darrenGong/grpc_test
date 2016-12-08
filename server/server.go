@@ -23,7 +23,7 @@ func (s *Server) SayHello(ctx context.Context, in *pb.HelloRequest) (*pb.HelloRe
 		ErrMessage: "",
 	}
 	return &pb.HelloResponse{
-		Rc: rc,
+		Rc: &rc,
 		Message: "Hello " + in.GetName(),
 	}, nil
 }
@@ -46,7 +46,7 @@ func main() {
 	}
 
 	server := grpc.NewServer()
-	pb.RegisterGreeterServer(server, &Server{})
+	pb.RegisterGreeterServer(server, Server{})
 	if err := server.Serve(lis); err != nil {
 		logger.WithField("Server", "HelloWorld").Fatalf("Failed to serve [err:%v]", err)
 	}
