@@ -1,7 +1,7 @@
 package main
 
 import (
-	"context"
+	"golang.org/x/net/context"
 	pb "grpc_test/proto/helloworld"
 	logger "github.com/Sirupsen/logrus"
 	"net"
@@ -46,7 +46,7 @@ func main() {
 	}
 
 	server := grpc.NewServer()
-	pb.RegisterGreeterServer(server, Server{})
+	pb.RegisterGreeterServer(server, &Server{})
 	if err := server.Serve(lis); err != nil {
 		logger.WithField("Server", "HelloWorld").Fatalf("Failed to serve [err:%v]", err)
 	}
