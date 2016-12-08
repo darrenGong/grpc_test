@@ -18,7 +18,7 @@ const (
 
 
 func (s *Server) SayHello(ctx context.Context, in *pb.HelloRequest) (*pb.HelloResponse, error) {
-	logger.WithField("Server", "HelloWorld").Infof("Start handle function sayhello")
+	logger.WithField("Server", "HelloWorld").Info("Start handle function sayhello")
 	rc := pb.ResponseCode{
 		ErrCode: 0,
 		ErrMessage: "",
@@ -41,6 +41,8 @@ func Init() {
 }
 
 func main() {
+	Init()
+
 	lis, err := net.Listen("tcp", lAddr)
 	if err != nil {
 		logger.WithField("Server", "HelloWorld").Fatalf("Failed to listen [laddr:%s, err:%v]", lAddr, err)
