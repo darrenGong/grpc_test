@@ -18,6 +18,7 @@ const (
 
 
 func (s *Server) SayHello(ctx context.Context, in *pb.HelloRequest) (*pb.HelloResponse, error) {
+	logger.WithField("Server", "HelloWorld").Infof("Start handle function sayhello")
 	rc := pb.ResponseCode{
 		ErrCode: 0,
 		ErrMessage: "",
