@@ -13,6 +13,7 @@ type Server struct {}
 
 const (
 	lAddr = ":10000"
+	LOGFILE = "log/server.log"
 )
 
 
@@ -28,7 +29,7 @@ func (s *Server) SayHello(ctx context.Context, in *pb.HelloRequest) (*pb.HelloRe
 }
 
 func Init() {
-	file, err := os.OpenFile("log", os.O_RDWR|os.O_CREATE|os.O_APPEND, 0666)
+	file, err := os.OpenFile(LOGFILE, os.O_RDWR|os.O_CREATE|os.O_APPEND, 0666)
 	if err != nil {
 		logger.WithField("Server", "HelloWorld").Fatalf("Failed to open file[name:%s, err:%v]", "log", err)
 	}

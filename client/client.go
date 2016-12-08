@@ -12,6 +12,7 @@ import (
 const (
 	lAddr = ":10000"
 	ConnTimeout = 10 * time.Second
+	LOGFILE = "log/client.log"
 )
 
 var (
@@ -24,7 +25,7 @@ func Init() {
 		"Server": "HelloWorld",
 	}
 	LOG = logger.WithFields(LogField)
-	file, err := os.OpenFile("log", os.O_RDWR|os.O_CREATE|os.O_APPEND, 0666)
+	file, err := os.OpenFile(LOGFILE, os.O_RDWR|os.O_CREATE|os.O_APPEND, 0666)
 	if err != nil {
 		LOG.Fatalf("Failed to open file[name:%s, err:%v]", "log", err)
 	}
