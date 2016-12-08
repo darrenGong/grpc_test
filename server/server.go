@@ -2,7 +2,7 @@ package main
 
 import (
 	"context"
-	pb "go_test/grpc_test/proto/helloworld"
+	pb "grpc_test/proto/helloworld"
 	logger "github.com/Sirupsen/logrus"
 	"net"
 	"google.golang.org/grpc"

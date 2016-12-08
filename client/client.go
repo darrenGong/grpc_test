@@ -5,7 +5,7 @@ import (
 	logger "github.com/Sirupsen/logrus"
 	"net"
 	"time"
-	pb "go_test/grpc_test/proto/helloworld"
+	pb "grpc_test/proto/helloworld"
 	"context"
 )
 
