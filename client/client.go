@@ -13,6 +13,7 @@ const (
 	lAddr       = ":10000"
 	ConnTimeout = 10 * time.Second
 	LOGFILE     = "log/client.log"
+	ConcurrencyNum = 10000
 )
 
 var (
@@ -35,7 +36,7 @@ func Init() {
 	logger.SetLevel(logger.DebugLevel)
 }
 
-func SendConn(conn *grpc.ClientConn) {
+func SendConn(conn *grpc.ClientConn, chanBlack chan<- int) {
 	client := pb.NewGreeterClient(conn)
 
 	r, err := client.SayHello(context.Background(), &pb.HelloRequest{Name: "World !"})
@@ -47,6 +48,7 @@ func SendConn(conn *grpc.ClientConn) {
 	}
 
 	LOG.Infof("Recv message: %s", r.GetMessage())
+	chanBlack <- 1
 }
 
 func main() {
@@ -58,10 +60,15 @@ func main() {
 	}
 	defer conn.Close()
 
-	for i := 0; i < 10000; i++ {
-		go SendConn(conn)
+	nowTime := time.Now()
+	chanBlock := make(chan int)
+	for i := 0; i < ConcurrencyNum; i++ {
+		go SendConn(conn, chanBlock)
 	}
 
-	chanBlock := make(chan int)
-	<-chanBlock
+	for i := 0; i < ConcurrencyNum; i++ {
+		<-chanBlock
+	}
+
+	LOG.Infof("Total cost time: %d", time.Since(nowTime))
 }
