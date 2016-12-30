@@ -35,15 +35,8 @@ func Init() {
 	logger.SetLevel(logger.DebugLevel)
 }
 
-func main() {
-	Init()
 
-	conn, err := grpc.Dial(lAddr, grpc.WithInsecure())
-	if err != nil {
-		LOG.Fatalf("Failed to dial[laddr:%s, err:%v]", lAddr, err)
-	}
-	defer conn.Close()
-
+func SendConn(conn *grpc.ClientConn) {
 	client := pb.NewGreeterClient(conn)
 
 	r, err := client.SayHello(context.Background(), &pb.HelloRequest{Name: "World !"})
@@ -55,4 +48,21 @@ func main() {
 	}
 
 	LOG.Infof("Recv message: %s", r.GetMessage())
+}
+
+func main() {
+	Init()
+
+	conn, err := grpc.Dial(lAddr, grpc.WithInsecure())
+	if err != nil {
+		LOG.Fatalf("Failed to dial[laddr:%s, err:%v]", lAddr, err)
+	}
+	defer conn.Close()
+
+	for i := 0; i < 10; i ++ {
+		go SendConn(conn)
+	}
+
+	chanBlock := make(chan int)
+	<- chanBlock
 }
