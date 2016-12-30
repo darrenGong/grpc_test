@@ -1,31 +1,40 @@
 package main
 
 import (
-	"golang.org/x/net/context"
 	pb "grpc_test/proto/helloworld"
-	logger "github.com/Sirupsen/logrus"
 	"net"
-	"google.golang.org/grpc"
 	"os"
-	"google.golang.org/grpc/grpclog"
+	"sync"
+
+	logger "github.com/Sirupsen/logrus"
+	"golang.org/x/net/context"
+	"google.golang.org/grpc"
 )
 
-type Server struct {}
+type Server struct{}
 
 const (
-	lAddr = ":10000"
+	lAddr   = ":10000"
 	LOGFILE = "log/server.log"
 )
 
+var (
+	gTotalNum uint32
+	gMutex    sync.Mutex
+)
 
 func (s *Server) SayHello(ctx context.Context, in *pb.HelloRequest) (*pb.HelloResponse, error) {
-	logger.WithField("Server", "HelloWorld").Info("Start handle function sayhello")
+	gMutex.Lock()
+	gTotalNum += 1
+	logger.WithField("Server", "HelloWorld").Infof("Start handle function sayhello, Total[%d]", gTotalNum)
+	gMutex.Unlock()
+
 	rc := pb.ResponseCode{
-		ErrCode: 0,
+		ErrCode:    0,
 		ErrMessage: "",
 	}
 	return &pb.HelloResponse{
-		Rc: &rc,
+		Rc:      &rc,
 		Message: "Hello " + in.GetName(),
 	}, nil
 }

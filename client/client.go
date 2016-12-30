@@ -35,7 +35,6 @@ func Init() {
 	logger.SetLevel(logger.DebugLevel)
 }
 
-
 func SendConn(conn *grpc.ClientConn) {
 	client := pb.NewGreeterClient(conn)
 
@@ -59,10 +58,10 @@ func main() {
 	}
 	defer conn.Close()
 
-	for i := 0; i < 10; i ++ {
+	for i := 0; i < 10000; i++ {
 		go SendConn(conn)
 	}
 
 	chanBlock := make(chan int)
-	<- chanBlock
+	<-chanBlock
 }
