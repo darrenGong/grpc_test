@@ -1,23 +1,23 @@
 package main
 
 import (
-	"os"
-	logger "github.com/Sirupsen/logrus"
-	"time"
-	pb "grpc_test/proto/helloworld"
 	"context"
+	logger "github.com/Sirupsen/logrus"
 	"google.golang.org/grpc"
+	pb "grpc_test/proto/helloworld"
+	"os"
+	"time"
 )
 
 const (
-	lAddr = ":10000"
+	lAddr       = ":10000"
 	ConnTimeout = 10 * time.Second
-	LOGFILE = "log/client.log"
+	LOGFILE     = "log/client.log"
 )
 
 var (
 	LogField logger.Fields
-	LOG *logger.Entry
+	LOG      *logger.Entry
 )
 
 func Init() {
