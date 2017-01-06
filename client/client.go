@@ -3,17 +3,19 @@ package main
 import (
 	"context"
 	logger "github.com/Sirupsen/logrus"
-	"google.golang.org/grpc"
 	pb "grpc_test/proto/helloworld"
 	"os"
 	"time"
+	"common"
 )
 
 const (
-	lAddr          = ":10000"
 	ConnTimeout    = 10 * time.Second
 	LOGFILE        = "log/client.log"
 	ConcurrencyNum = 1
+
+	registerPath = "/NS/TestEnv/helloclient/master"
+	nodeValue = "hello client"
 )
 
 var (
@@ -34,9 +36,22 @@ func Init() {
 	logger.SetFormatter(&logger.JSONFormatter{})
 	logger.SetOutput(file)
 	logger.SetLevel(logger.DebugLevel)
+
+	common.InitCommon(registerPath, nodeValue)
 }
 
-func SendConn(conn *grpc.ClientConn, chanBlack chan<- int) {
+func Release() {
+	common.Release()
+}
+
+func SendConn(chanBlack chan<- int) {
+	conn, err := common.GetConnToHelloManager()
+	if err != nil {
+		LOG.Errorf("Failed to get conn to hello manager[err:%v]", err)
+		chanBlack <- 1
+		return
+	}
+
 	client := pb.NewGreeterClient(conn)
 
 	for i := 0; i <= 10; i++ {
@@ -49,7 +64,7 @@ func SendConn(conn *grpc.ClientConn, chanBlack chan<- int) {
 		if r.GetRc().ErrCode != 0 {
 			LOG.Fatalf("Return err after request say hello[errInfo:%v]", r.GetRc())
 		}
-		LOG.Infof("Recv message: %s", r.GetMessage())
+		logger.Printf("Recv message: %s", r.GetMessage())
 	}
 
 	chanBlack <- 1
@@ -58,16 +73,10 @@ func SendConn(conn *grpc.ClientConn, chanBlack chan<- int) {
 func main() {
 	Init()
 
-	conn, err := grpc.Dial(lAddr, grpc.WithInsecure())
-	if err != nil {
-		LOG.Fatalf("Failed to dial[laddr:%s, err:%v]", lAddr, err)
-	}
-	defer conn.Close()
-
 	nowTime := time.Now()
 	chanBlock := make(chan int)
 	for i := 0; i < ConcurrencyNum; i++ {
-		go SendConn(conn, chanBlock)
+		go SendConn(chanBlock)
 	}
 
 	for i := 0; i < ConcurrencyNum; i++ {
