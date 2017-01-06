@@ -4,7 +4,6 @@ import (
 	pb "grpc_test/proto/helloworld"
 	"net"
 	"os"
-	"sync"
 
 	logger "github.com/Sirupsen/logrus"
 	"golang.org/x/net/context"
@@ -18,16 +17,8 @@ const (
 	LOGFILE = "log/server.log"
 )
 
-var (
-	gTotalNum uint32
-	gMutex    sync.Mutex
-)
-
 func (s *Server) SayHello(ctx context.Context, in *pb.HelloRequest) (*pb.HelloResponse, error) {
-	gMutex.Lock()
-	gTotalNum += 1
-	logger.WithField("Server", "HelloWorld").Infof("Start handle function sayhello, Total[%d]", gTotalNum)
-	gMutex.Unlock()
+	//logger.WithField("Server", "HelloWorld").Infof("Start handle function sayhello, Total[%d]", gTotalNum)
 
 	rc := pb.ResponseCode{
 		ErrCode:    0,

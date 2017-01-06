@@ -10,10 +10,10 @@ import (
 )
 
 const (
-	lAddr       = ":10000"
-	ConnTimeout = 10 * time.Second
-	LOGFILE     = "log/client.log"
-	ConcurrencyNum = 10000
+	lAddr          = ":10000"
+	ConnTimeout    = 10 * time.Second
+	LOGFILE        = "log/client.log"
+	ConcurrencyNum = 1
 )
 
 var (
@@ -39,15 +39,19 @@ func Init() {
 func SendConn(conn *grpc.ClientConn, chanBlack chan<- int) {
 	client := pb.NewGreeterClient(conn)
 
-	r, err := client.SayHello(context.Background(), &pb.HelloRequest{Name: "World !"})
-	if err != nil {
-		LOG.Fatalf("Failed to say hello[err:%v]", err)
-	}
-	if r.GetRc().ErrCode != 0 {
-		LOG.Fatalf("Return err after request say hello[errInfo:%v]", r.GetRc())
+	for i := 0; i <= 10; i++ {
+		time.Sleep(5 * time.Second)
+		r, err := client.SayHello(context.Background(), &pb.HelloRequest{Name: "World !"})
+		if err != nil {
+			LOG.Errorf("Failed to say hello[err:%v]", err)
+			continue
+		}
+		if r.GetRc().ErrCode != 0 {
+			LOG.Fatalf("Return err after request say hello[errInfo:%v]", r.GetRc())
+		}
+		LOG.Infof("Recv message: %s", r.GetMessage())
 	}
 
-	LOG.Infof("Recv message: %s", r.GetMessage())
 	chanBlack <- 1
 }
 
@@ -70,5 +74,5 @@ func main() {
 		<-chanBlock
 	}
 
-	LOG.Infof("Total cost time: %d", time.Since(nowTime))
+	LOG.Infof("Total cost time: %v", time.Since(nowTime))
 }
